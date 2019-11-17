@@ -190,17 +190,17 @@ def create_venue_submission():
   address = form.address.data
   phone = form.phone.data
   genres = form.genres.data
+  genres = form.genres.data
   facebook_link = form.facebook_link.data
   website = form.website.data
   image_link = form.image_link.data
   seeking_talent = form.seeking_talent.data
   seeking_description = form.seeking_description.data
-  skt = True
+  skt = False
 
   if seeking_talent == 'Yes':
     skt = True
-  else:
-    skt = False
+
 
   try:
     venue = Venue(name=name, city=city, state=state, address=address,
@@ -270,8 +270,12 @@ def search_artists():
 def show_artist(artist_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
+  # Get all Artist data
+  data = {}
+  artist = Artist.query.filter_by(id=artist_id).first()
+  # Get all venue data
   
-  data = Artist.query.filter_by(id=artist_id).first()
+  print(data.genres)
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
@@ -348,9 +352,21 @@ def create_artist_submission():
   phone = form.phone.data
   genres = form.genres.data
   facebook_link = form.facebook_link.data
+  website = form.website.data
+  image_link = form.image_link.data
+  seeking_venue = form.seeking_venue.data
+  seeking_description = form.seeking_description.data
+  svenue = False
+
+  if seeking_venue == 'Yes':
+    svenue = True
 
   try:
-    artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres, facebook_link=facebook_link)
+    artist = Artist(name=name, city=city, state=state, phone=phone,
+      genres=genres, facebook_link=facebook_link,
+      website=website, image_link=image_link,
+      seeking_venue=svenue,
+      seeking_description=seeking_description)
     db.session.add(artist)
     db.session.commit()
     # on successful db insert, flash success
@@ -358,6 +374,7 @@ def create_artist_submission():
 
   except Exception as e:
     db.session.rollback()
+    print(e)
     # TODO: on unsuccessful db insert, flash an error instead.
     flash('An error occurred. Artist ' +name + ' could not be listed.')
     # flash('An error has occured. See '+e)
